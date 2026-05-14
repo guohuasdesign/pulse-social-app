@@ -3,7 +3,7 @@ import Sidebar from "./components/Sidebar";
 import Header from "./components/Header";
 
 export const metadata = {
-  title: "Lettweet",
+  title: "Pulse: AI-powered Professional Idea Feed",
   description: "A simple tweet feed built with Next.js",
 };
 
