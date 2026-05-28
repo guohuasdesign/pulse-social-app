@@ -5,7 +5,7 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-10 flex items-center justify-between border-b border-gray-200 bg-white px-4 py-3">
       <h1 className="text-2xl font-bold">
-        pulse: AI-powered Professional Idea Feed
+        pulse: you could social using your Idea
       </h1>
       <nav>
         <ul className="flex items-center gap-6">

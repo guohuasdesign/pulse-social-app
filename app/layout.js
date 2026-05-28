@@ -1,10 +1,11 @@
 import "./globals.css";
-import Sidebar from "./components/Sidebar";
-import Header from "./components/Header";
+import Sidebar from "@/components/Sidebar";
+import Header from "@/components/Header";
 
 export const metadata = {
-  title: "Pulse: AI-powered Professional Idea Feed",
-  description: "A simple tweet feed built with Next.js",
+  title: "Pulse",
+  description:
+    "You could social using your IdeaA simple tweet feed built with Next.js",
 };
 
 export default function RootLayout({ children }) {

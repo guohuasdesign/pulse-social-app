@@ -1,10 +1,8 @@
-// app/page.js - Fetching tweets from DummyJSON API
-import TweetCard from "./components/TweetCard";
+import TweetCard from "@/components/TweetCard";
+import TweetForm from "@/components/TweetForm";
+import { getTweets } from "@/lib/tweets";
 
-async function getTweets() {
-  const res = await fetch("https://dummyjson.com/posts");
-  return res.json();
-}
+export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
   const tweets = await getTweets();
@@ -12,11 +10,14 @@ export default async function HomePage() {
   return (
     <main className="mx-auto w-full max-w-2xl">
       <h1 className="border-b border-gray-200 px-4 py-4 text-2xl font-bold">
-        Latest Tweets
+        Your Tweets
       </h1>
-      {tweets.posts.map((tweet) => (
-        <TweetCard key={tweet.id} tweet={tweet} />
-      ))}
+      <TweetForm />
+      {tweets.length > 0 ? (
+        tweets.map((tweet) => <TweetCard key={tweet.id} tweet={tweet} />)
+      ) : (
+        <p className="px-4 py-6 text-gray-600">No tweets yet.</p>
+      )}
     </main>
   );
 }
