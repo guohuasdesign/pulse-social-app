@@ -12,6 +12,10 @@ const tweetSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
     reactions: {
       likes: {
         type: Number,
@@ -22,6 +26,24 @@ const tweetSchema = new mongoose.Schema(
         default: 0,
       },
     },
+    likedBy: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+    dislikedBy: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+    bookmarkedBy: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
   },
   {
     collection: "tweets",

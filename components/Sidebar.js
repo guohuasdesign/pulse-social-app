@@ -11,14 +11,26 @@ const getServerSnapshot = () => false;
 
 const Sidebar = () => {
   const pathname = usePathname();
+  const publicPages = [
+    "/",
+    "/login",
+    "/register",
+    "/forgot-password",
+    "/reset-password",
+    "/onboarding",
+  ];
   const mounted = useSyncExternalStore(
     emptySubscribe,
     getClientSnapshot,
     getServerSnapshot,
   );
 
+  if (publicPages.includes(pathname)) {
+    return null;
+  }
+
   const menuItems = [
-    { name: "Home", path: "/" },
+    { name: "Home", path: "/home" },
     { name: "Explore", path: "/explore" },
     { name: "Notifications", path: "/notifications" },
     { name: "Following", path: "/following" },
