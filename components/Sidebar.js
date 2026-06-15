@@ -41,7 +41,10 @@ const Sidebar = () => {
   ];
 
   return (
-    <aside className="sticky top-16 h-[calc(100vh-4rem)] w-64 border-r border-gray-200 bg-white px-4 py-6">
+    <aside
+      className="sticky top-16 h-[calc(100vh-4rem)] w-64 px-4 py-6"
+      style={{ borderRight: "1px solid var(--border)" }}
+    >
       <nav>
         <ul className="space-y-1">
           {menuItems.map((item) => {
@@ -51,11 +54,12 @@ const Sidebar = () => {
               <li key={item.path}>
                 <Link
                   href={item.path}
-                  className={`block rounded-md px-3 py-2 text-sm font-medium ${
+                  className="block rounded-md px-3 py-2 text-sm font-medium transition-colors"
+                  style={
                     isActive
-                      ? "bg-blue-50 text-blue-600"
-                      : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
-                  }`}
+                      ? { background: "rgba(180, 88, 55, 0.08)", color: "var(--accent)" }
+                      : { color: "var(--text-muted)" }
+                  }
                 >
                   {item.name}
                 </Link>

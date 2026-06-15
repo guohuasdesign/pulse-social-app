@@ -8,14 +8,15 @@ export default async function Header() {
   const isLoggedIn = Boolean(cookieStore.get("token")?.value);
 
   return (
-    <header className="sticky top-0 z-10 flex items-center justify-between border-b border-gray-200 bg-white px-4 py-3">
-      <h1 className="text-2xl font-bold">Pulse: social using your Idea</h1>
+    <header className="surface sticky top-0 z-10 flex items-center justify-between rounded-none border-b-0 px-4 py-3" style={{ borderRadius: 0, borderLeft: "none", borderRight: "none", borderTop: "none" }}>
+      <h1 className="text-xl font-medium" style={{ fontFamily: "var(--font-display)", color: "var(--foreground)" }}>Pulse</h1>
       <nav>
         <ul className="flex items-center gap-6">
           <li>
             <Link
               href={isLoggedIn ? "/home" : "/"}
-              className="text-gray-700 hover:text-blue-600"
+              className="text-sm font-medium hover:opacity-70 transition-opacity"
+              style={{ color: "var(--text-muted)" }}
             >
               Home
             </Link>
@@ -25,7 +26,8 @@ export default async function Header() {
               <li>
                 <Link
                   href="/about"
-                  className="text-gray-700 hover:text-blue-600"
+                  className="text-sm font-medium hover:opacity-70 transition-opacity"
+                  style={{ color: "var(--text-muted)" }}
                 >
                   About
                 </Link>
@@ -39,16 +41,14 @@ export default async function Header() {
               <li>
                 <Link
                   href="/login"
-                  className="text-gray-700 hover:text-blue-600"
+                  className="text-sm font-medium hover:opacity-70 transition-opacity"
+                  style={{ color: "var(--text-muted)" }}
                 >
                   Login
                 </Link>
               </li>
               <li>
-                <Link
-                  href="/register"
-                  className="text-gray-700 hover:text-blue-600"
-                >
+                <Link href="/register" className="btn-primary text-sm" style={{ padding: "6px 14px" }}>
                   Sign up
                 </Link>
               </li>
