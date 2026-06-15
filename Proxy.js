@@ -6,7 +6,6 @@ const publicPages = [
   "/register",
   "/forgot-password",
   "/reset-password",
-  "/onboarding",
 ];
 
 export function proxy(request) {

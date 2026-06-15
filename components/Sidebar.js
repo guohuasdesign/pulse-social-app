@@ -1,6 +1,5 @@
 "use client";
 
-// Left menu (HomePage, Explore, Notifications, Messages, Bookmarks, Lists, Profile, More)
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSyncExternalStore } from "react";
@@ -17,7 +16,6 @@ const Sidebar = () => {
     "/register",
     "/forgot-password",
     "/reset-password",
-    "/onboarding",
   ];
   const mounted = useSyncExternalStore(
     emptySubscribe,
@@ -29,16 +27,7 @@ const Sidebar = () => {
     return null;
   }
 
-  const menuItems = [
-    { name: "Home", path: "/home" },
-    { name: "Explore", path: "/explore" },
-    { name: "Notifications", path: "/notifications" },
-    { name: "Following", path: "/following" },
-    { name: "Messages", path: "/messages" },
-    { name: "Bookmarks", path: "/bookmarks" },
-    { name: "Profile", path: "/profile" },
-    { name: "More", path: "/more" },
-  ];
+  const menuItems = [{ name: "Home", path: "/home" }];
 
   return (
     <aside
