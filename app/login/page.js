@@ -58,8 +58,10 @@ export default function LoginPage() {
             <label className="sr-only" htmlFor="email">Email</label>
             <input
               id="email"
+              name="email"
               className="input"
               type="email"
+              autoComplete="email"
               placeholder="Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -71,8 +73,10 @@ export default function LoginPage() {
             <label className="sr-only" htmlFor="password">Password</label>
             <input
               id="password"
+              name="password"
               className="input"
               type={showPassword ? "text" : "password"}
+              autoComplete="current-password"
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}

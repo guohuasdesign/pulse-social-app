@@ -1,6 +1,6 @@
 # Pulse Social App
 
-A simple social feed app built with Next.js.
+A simple social feed app built with Next.js and MongoDB using mongoose.
 
 ## Getting Started
 

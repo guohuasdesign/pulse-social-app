@@ -65,20 +65,78 @@ const TweetCard = ({ tweet, currentUserId }) => {
     router.refresh();
   }
 
+  const actionButtonClass =
+    "rounded-md border px-3 py-1 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-60";
+  const inactiveActionStyle = {
+    borderColor: "var(--border)",
+    color: "var(--text-muted)",
+  };
+  const activeActionStyle = {
+    borderColor: "rgba(180, 88, 55, 0.28)",
+    background: "rgba(180, 88, 55, 0.08)",
+    color: "var(--accent)",
+  };
+  const publishedAt = tweet.createdAt
+    ? new Date(tweet.createdAt).toLocaleString("en-GB", {
+        dateStyle: "medium",
+        timeStyle: "short",
+        timeZone: "Europe/Berlin",
+      })
+    : null;
+
   return (
-    <article className="border-b border-gray-200 px-4 py-4">
+    <article className="card mt-4">
       <Link
         href={`/tweet/${tweet.id}`}
-        className="block rounded-md hover:bg-gray-50"
+        className="block rounded-md transition-opacity hover:opacity-80"
       >
-        <h2 className="font-semibold">{tweet.title}</h2>
+        <div className="flex items-start justify-between gap-3">
+          <h2
+            className="text-2xl"
+            style={{ fontFamily: "var(--font-display)", fontWeight: 400 }}
+          >
+            {tweet.title}
+          </h2>
+          {tweet.source === "dummyjson" ? (
+            <span
+              className="rounded-md border px-2 py-1 text-xs"
+              style={{
+                borderColor: "var(--border)",
+                color: "var(--text-muted)",
+              }}
+            >
+              Demo
+            </span>
+          ) : null}
+          {tweet.isRepost ? (
+            <span
+              className="rounded-md border px-2 py-1 text-xs"
+              style={{
+                borderColor: "rgba(180, 88, 55, 0.28)",
+                color: "var(--accent)",
+              }}
+            >
+              Repost
+            </span>
+          ) : null}
+        </div>
 
-        <p className="mt-2 text-gray-700">{tweet.body}</p>
+        <p className="mt-3 line-clamp-3" style={{ color: "var(--foreground)" }}>
+          {tweet.body}
+        </p>
 
-        <div className="mt-3 flex gap-4 text-sm text-gray-500">
+        <div
+          className="mt-4 flex flex-wrap gap-x-4 gap-y-1 text-sm"
+          style={{ color: "var(--text-muted)" }}
+        >
+          {publishedAt ? (
+            <time dateTime={new Date(tweet.createdAt).toISOString()}>
+              {publishedAt}
+            </time>
+          ) : null}
           <span>Likes: {tweet.reactions?.likes ?? 0}</span>
-
           <span>Dislikes: {tweet.reactions?.dislikes ?? 0}</span>
+          <span>Reposts: {tweet.reactions?.reposts ?? 0}</span>
         </div>
       </Link>
 
@@ -91,11 +149,8 @@ const TweetCard = ({ tweet, currentUserId }) => {
               type="button"
               onClick={() => handleAction("like")}
               disabled={Boolean(updatingAction)}
-              className={`rounded-md border px-3 py-1 text-sm ${
-                tweet.viewer?.liked
-                  ? "border-blue-600 bg-blue-50 text-blue-700"
-                  : "border-gray-300 text-gray-700 hover:bg-gray-50"
-              } disabled:cursor-not-allowed disabled:opacity-60`}
+              className={actionButtonClass}
+              style={tweet.viewer?.liked ? activeActionStyle : inactiveActionStyle}
             >
               {updatingAction === "like" ? "Liking..." : "Like"}
             </button>
@@ -104,11 +159,10 @@ const TweetCard = ({ tweet, currentUserId }) => {
               type="button"
               onClick={() => handleAction("dislike")}
               disabled={Boolean(updatingAction)}
-              className={`rounded-md border px-3 py-1 text-sm ${
-                tweet.viewer?.disliked
-                  ? "border-blue-600 bg-blue-50 text-blue-700"
-                  : "border-gray-300 text-gray-700 hover:bg-gray-50"
-              } disabled:cursor-not-allowed disabled:opacity-60`}
+              className={actionButtonClass}
+              style={
+                tweet.viewer?.disliked ? activeActionStyle : inactiveActionStyle
+              }
             >
               {updatingAction === "dislike" ? "Updating..." : "Dislike"}
             </button>
@@ -117,13 +171,34 @@ const TweetCard = ({ tweet, currentUserId }) => {
               type="button"
               onClick={() => handleAction("bookmark")}
               disabled={Boolean(updatingAction)}
-              className={`rounded-md border px-3 py-1 text-sm ${
+              className={actionButtonClass}
+              style={
                 tweet.viewer?.bookmarked
-                  ? "border-blue-600 bg-blue-50 text-blue-700"
-                  : "border-gray-300 text-gray-700 hover:bg-gray-50"
-              } disabled:cursor-not-allowed disabled:opacity-60`}
+                  ? activeActionStyle
+                  : inactiveActionStyle
+              }
             >
-              {updatingAction === "bookmark" ? "Saving..." : "Bookmark"}
+              {updatingAction === "bookmark"
+                ? "Saving..."
+                : tweet.viewer?.bookmarked
+                  ? "Bookmarked"
+                  : "Bookmark"}
+            </button>
+
+            <button
+              type="button"
+              onClick={() => handleAction("repost")}
+              disabled={Boolean(updatingAction)}
+              className={actionButtonClass}
+              style={
+                tweet.viewer?.reposted ? activeActionStyle : inactiveActionStyle
+              }
+            >
+              {updatingAction === "repost"
+                ? "Reposting..."
+                : tweet.viewer?.reposted
+                  ? "Reposted"
+                  : "Repost"}
             </button>
           </>
         ) : null}
@@ -133,7 +208,11 @@ const TweetCard = ({ tweet, currentUserId }) => {
             type="button"
             onClick={handleDelete}
             disabled={isDeleting}
-            className="rounded-md bg-red-600 px-3 py-1 text-sm text-white hover:bg-red-700 disabled:bg-red-300"
+            className="rounded-md border px-3 py-1 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-60"
+            style={{
+              borderColor: "rgba(220, 38, 38, 0.24)",
+              color: "#dc2626",
+            }}
           >
             {isDeleting ? "Deleting..." : "Delete"}
           </button>

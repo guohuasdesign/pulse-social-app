@@ -16,6 +16,10 @@ const tweetSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
+    repostOf: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Tweet",
+    },
     reactions: {
       likes: {
         type: Number,
@@ -39,6 +43,12 @@ const tweetSchema = new mongoose.Schema(
       },
     ],
     bookmarkedBy: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+    repostedBy: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",

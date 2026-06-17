@@ -65,7 +65,9 @@ export default function ResetPasswordForm({ token }) {
         <div className="relative">
           <input
             className="w-full border p-2 pr-16"
+            name="newPassword"
             type={showPassword ? "text" : "password"}
+            autoComplete="new-password"
             placeholder="New password"
             value={password}
             onChange={(event) => setPassword(event.target.value)}
@@ -82,7 +84,9 @@ export default function ResetPasswordForm({ token }) {
         <div className="relative">
           <input
             className="w-full border p-2 pr-16"
+            name="newPasswordConfirmation"
             type={showPasswordConfirmation ? "text" : "password"}
+            autoComplete="new-password"
             placeholder="Confirm new password"
             value={passwordConfirmation}
             onChange={(event) => setPasswordConfirmation(event.target.value)}

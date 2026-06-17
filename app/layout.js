@@ -18,7 +18,7 @@ export default function RootLayout({ children }) {
         </HeaderVisibility>
         <div className="flex">
           <Sidebar />
-          <main className="flex-1">{children}</main>
+          <main className="flex-1 pb-24 md:pb-0">{children}</main>
         </div>
       </body>
     </html>

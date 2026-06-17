@@ -2,10 +2,12 @@
 import { cookies } from "next/headers";
 import Link from "next/link";
 import LogoutButton from "@/components/LogoutButton";
+import { verifyJwtToken } from "@/lib/auth";
 
 export default async function Header() {
   const cookieStore = await cookies();
-  const isLoggedIn = Boolean(cookieStore.get("token")?.value);
+  const currentUser = verifyJwtToken(cookieStore.get("token")?.value);
+  const isLoggedIn = Boolean(currentUser);
 
   return (
     <header className="surface sticky top-0 z-10 flex items-center justify-between rounded-none border-b-0 px-4 py-3" style={{ borderRadius: 0, borderLeft: "none", borderRight: "none", borderTop: "none" }}>
