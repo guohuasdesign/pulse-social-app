@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import VoiceTranscribeButton from "@/components/VoiceTranscribeButton";
 
 export default function TweetForm() {
   const router = useRouter();
@@ -9,6 +10,18 @@ export default function TweetForm() {
   const [body, setBody] = useState("");
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  function buildTitleFromTranscript(transcript) {
+    const firstLine = transcript.trim().split(/[.!?\n]/)[0];
+    return firstLine.length > 60 ? `${firstLine.slice(0, 57)}...` : firstLine;
+  }
+
+  function appendTranscript(transcript) {
+    setBody((currentBody) =>
+      currentBody ? `${currentBody}\n${transcript}` : transcript,
+    );
+    setTitle((currentTitle) => currentTitle || buildTitleFromTranscript(transcript));
+  }
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -83,20 +96,35 @@ export default function TweetForm() {
       {error ? <p className="mt-3 text-sm text-red-600">{error}</p> : null}
 
       <div className="mt-4 flex items-center justify-between gap-3">
-        <p className="text-xs" style={{ color: "var(--text-muted)" }}>
-          {body.length} characters
-        </p>
-        <button
-          type="submit"
-          disabled={isSubmitting}
-          className="btn-primary"
-          style={{
-            opacity: isSubmitting ? 0.6 : undefined,
-            cursor: isSubmitting ? "not-allowed" : undefined,
-          }}
-        >
-          {isSubmitting ? "Posting..." : "Post"}
-        </button>
+        <div className="flex flex-col">
+          <p className="text-xs" style={{ color: "var(--text-muted)" }}>
+            {body.length} characters
+          </p>
+          <p className="text-xs" style={{ color: "var(--text-muted)" }}>
+            Record your voice and turn it into tweet text.
+          </p>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <VoiceTranscribeButton
+            disabled={isSubmitting}
+            onError={setError}
+            onTranscript={appendTranscript}
+            title="Speak thought"
+          />
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="btn-primary"
+            style={{
+              opacity: isSubmitting ? 0.6 : undefined,
+              cursor: isSubmitting ? "not-allowed" : undefined,
+              minHeight: "40px",
+            }}
+          >
+            {isSubmitting ? "Posting..." : "Post"}
+          </button>
+        </div>
       </div>
     </form>
   );

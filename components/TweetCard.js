@@ -3,17 +3,52 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import VoiceTranscribeButton from "@/components/VoiceTranscribeButton";
 
 const TweetCard = ({ tweet, currentUserId }) => {
   const router = useRouter();
 
   const [isDeleting, setIsDeleting] = useState(false);
+  const [commentBody, setCommentBody] = useState("");
+  const [isCommenting, setIsCommenting] = useState(false);
   const [updatingAction, setUpdatingAction] = useState("");
   const [error, setError] = useState("");
 
   const isOwner =
     currentUserId && tweet.userId && currentUserId === tweet.userId.toString();
   const canInteract = tweet.source === "mongodb";
+
+  function playReactionSound(action) {
+    if (!["like", "dislike"].includes(action)) return;
+
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+
+    if (!AudioContext) return;
+
+    const audioContext = new AudioContext();
+    const oscillator = audioContext.createOscillator();
+    const gain = audioContext.createGain();
+    const startTime = audioContext.currentTime;
+    const endTime = startTime + 0.14;
+    const startFrequency = action === "like" ? 520 : 220;
+    const endFrequency = action === "like" ? 760 : 140;
+
+    oscillator.type = "sine";
+    oscillator.frequency.setValueAtTime(startFrequency, startTime);
+    oscillator.frequency.exponentialRampToValueAtTime(endFrequency, endTime);
+    gain.gain.setValueAtTime(0.0001, startTime);
+    gain.gain.exponentialRampToValueAtTime(0.08, startTime + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.0001, endTime);
+
+    oscillator.connect(gain);
+    gain.connect(audioContext.destination);
+    oscillator.start(startTime);
+    oscillator.stop(endTime);
+
+    oscillator.onended = () => {
+      audioContext.close();
+    };
+  }
 
   async function handleAction(action) {
     setUpdatingAction(action);
@@ -36,6 +71,7 @@ const TweetCard = ({ tweet, currentUserId }) => {
       return;
     }
 
+    playReactionSound(action);
     router.refresh();
   }
 
@@ -63,6 +99,40 @@ const TweetCard = ({ tweet, currentUserId }) => {
     }
 
     router.refresh();
+  }
+
+  async function handleComment(event) {
+    event.preventDefault();
+    if (isCommenting) return;
+
+    setIsCommenting(true);
+    setError("");
+
+    const response = await fetch(`/api/tweets/${tweet.id}/comments`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ body: commentBody }),
+    });
+
+    setIsCommenting(false);
+
+    if (!response.ok) {
+      const data = await response.json();
+
+      setError(data.error ?? "Could not post comment.");
+      return;
+    }
+
+    setCommentBody("");
+    router.refresh();
+  }
+
+  function appendCommentTranscript(transcript) {
+    setCommentBody((currentBody) =>
+      currentBody ? `${currentBody} ${transcript}` : transcript,
+    );
   }
 
   const actionButtonClass =
@@ -137,6 +207,7 @@ const TweetCard = ({ tweet, currentUserId }) => {
           <span>Likes: {tweet.reactions?.likes ?? 0}</span>
           <span>Dislikes: {tweet.reactions?.dislikes ?? 0}</span>
           <span>Reposts: {tweet.reactions?.reposts ?? 0}</span>
+          <span>Comments: {tweet.commentsCount ?? 0}</span>
         </div>
       </Link>
 
@@ -218,6 +289,91 @@ const TweetCard = ({ tweet, currentUserId }) => {
           </button>
         ) : null}
       </div>
+
+      {canInteract ? (
+        <section
+          className="mt-5 border-t pt-4"
+          style={{ borderColor: "var(--border)" }}
+        >
+          <div className="space-y-3">
+            {tweet.comments?.length > 0 ? (
+              tweet.comments.map((comment) => (
+                <article key={comment.id} className="text-sm">
+                  <div className="flex flex-wrap items-center gap-2 text-xs">
+                    <span
+                      className="font-medium"
+                      style={{ color: "var(--foreground)" }}
+                    >
+                      {comment.userEmail ?? "Pulse user"}
+                    </span>
+                    <time style={{ color: "var(--text-muted)" }}>
+                      {new Date(comment.createdAt).toLocaleString()}
+                    </time>
+                  </div>
+                  <p className="mt-1" style={{ color: "var(--foreground)" }}>
+                    {comment.body}
+                  </p>
+                </article>
+              ))
+            ) : (
+              <p className="text-sm" style={{ color: "var(--text-muted)" }}>
+                No comments yet.
+              </p>
+            )}
+          </div>
+
+          {currentUserId ? (
+            <form onSubmit={handleComment} className="mt-4">
+              <label className="sr-only" htmlFor={`comment-${tweet.id}`}>
+                Add a comment
+              </label>
+              <textarea
+                id={`comment-${tweet.id}`}
+                className="input min-h-20 resize-y"
+                maxLength={280}
+                placeholder="Add a comment..."
+                value={commentBody}
+                onChange={(event) => setCommentBody(event.target.value)}
+                required
+              />
+              <div className="mt-2 flex items-center justify-between gap-3">
+                <p className="text-xs" style={{ color: "var(--text-muted)" }}>
+                  {commentBody.length}/280
+                </p>
+                <div className="flex items-center gap-2">
+                  <VoiceTranscribeButton
+                    disabled={isCommenting}
+                    onError={setError}
+                    onTranscript={appendCommentTranscript}
+                  />
+                  <button
+                    type="submit"
+                    className="btn-primary"
+                    disabled={isCommenting}
+                    style={{
+                      opacity: isCommenting ? 0.6 : undefined,
+                      cursor: isCommenting ? "not-allowed" : undefined,
+                      padding: "6px 14px",
+                    }}
+                  >
+                    {isCommenting ? "Posting..." : "Comment"}
+                  </button>
+                </div>
+              </div>
+            </form>
+          ) : null}
+
+          {(tweet.commentsCount ?? 0) > (tweet.comments?.length ?? 0) ? (
+            <Link
+              href={`/tweet/${tweet.id}`}
+              className="mt-3 inline-block text-sm hover:underline"
+              style={{ color: "var(--accent)" }}
+            >
+              View all comments
+            </Link>
+          ) : null}
+        </section>
+      ) : null}
     </article>
   );
 };

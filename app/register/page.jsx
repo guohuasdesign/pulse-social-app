@@ -112,17 +112,13 @@ export default function RegisterPage() {
               autoComplete="new-password"
               placeholder="Confirm password"
               value={passwordConfirmation}
-              onChange={(event) =>
-                setPasswordConfirmation(event.target.value)
-              }
+              onChange={(event) => setPasswordConfirmation(event.target.value)}
               required
               style={{ paddingRight: "56px" }}
             />
             <button
               type="button"
-              onClick={() =>
-                setShowPasswordConfirmation((current) => !current)
-              }
+              onClick={() => setShowPasswordConfirmation((current) => !current)}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-xs"
               style={{ color: "var(--text-muted)" }}
             >

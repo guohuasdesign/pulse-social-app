@@ -2,12 +2,19 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import VoiceTranscribeButton from "@/components/VoiceTranscribeButton";
 
 export default function CommentForm({ tweetId }) {
   const router = useRouter();
   const [body, setBody] = useState("");
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  function appendTranscript(transcript) {
+    setBody((currentBody) =>
+      currentBody ? `${currentBody} ${transcript}` : transcript,
+    );
+  }
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -55,17 +62,24 @@ export default function CommentForm({ tweetId }) {
         <p className="text-xs" style={{ color: "var(--text-muted)" }}>
           {body.length}/280
         </p>
-        <button
-          type="submit"
-          className="btn-primary"
-          disabled={isSubmitting}
-          style={{
-            opacity: isSubmitting ? 0.6 : undefined,
-            cursor: isSubmitting ? "not-allowed" : undefined,
-          }}
-        >
-          {isSubmitting ? "Posting..." : "Comment"}
-        </button>
+        <div className="flex items-center gap-2">
+          <VoiceTranscribeButton
+            disabled={isSubmitting}
+            onError={setError}
+            onTranscript={appendTranscript}
+          />
+          <button
+            type="submit"
+            className="btn-primary"
+            disabled={isSubmitting}
+            style={{
+              opacity: isSubmitting ? 0.6 : undefined,
+              cursor: isSubmitting ? "not-allowed" : undefined,
+            }}
+          >
+            {isSubmitting ? "Posting..." : "Comment"}
+          </button>
+        </div>
       </div>
 
       {error ? <p className="mt-3 text-sm text-red-600">{error}</p> : null}
